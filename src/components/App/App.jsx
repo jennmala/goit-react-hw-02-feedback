@@ -1,29 +1,57 @@
-import { Profile } from 'components/Profile/Profile';
-import { Statistics } from 'components/Statistics/Statistics';
-import { FriendList } from 'components/FriendList/FriendList';
-import { TransactionHistory } from 'components/TransactionHistory/TransactionHistory';
-import user from 'user.json';
-import data from 'data.json';
-import friends from 'friends.json';
-import transactions from 'transactions.json';
-import { Container } from './App.styled';
+import { FeedbackOptions } from "components/App/FeedbackOptions/FeedbackOptions";
+import { Statistics } from "components/App/Statistics/Statistics";
+import { Section } from "components/App/Section/Section";
+import { Notification } from "components/App/Notification/Notification";
 
-export const App = () => {
-  return (
-    <Container>
-      <Profile
-        username={user.username}
-        tag={user.tag}
-        location={user.location}
-        avatar={user.avatar}
-        stats={user.stats}
-      />
+import { Container } from "./App.styled";
+import React, { Component } from "react";
 
-      <Statistics title="Upload stats" stats={data} />
+export class App extends Component {
+  // static defaultProps = {
+  //   initialValueGood: 0,
+  // }
 
-      <FriendList friends={friends} />
+  // static propTypes = {
+  // }
 
-      <TransactionHistory items={transactions} />
-    </Container>
-  );
-};
+  state = {
+    // good: this.props.initialValueGood,
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+
+  onButtonClick = (e) => {
+    const name = e.currentTarget.name;
+
+    this.setState((prevState) => ({
+      [name]: prevState[name] + 1,
+    }));
+  };
+
+  render() {
+    return (
+      <Container>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            onGoodClick={this.onButtonClick}
+            onNeutralClick={this.onButtonClick}
+            onBadClick={this.onButtonClick}
+          />
+        </Section>
+
+        <Section title="Statistics">
+          {this.state.good + this.state.neutral + this.state.bad > 0 ? (
+            <Statistics
+              good={this.state.good}
+              neutral={this.state.neutral}
+              bad={this.state.bad}
+            />
+          ) : (
+            <Notification message="There is no feedback" />
+          )}
+        </Section>
+      </Container>
+    );
+  }
+}
